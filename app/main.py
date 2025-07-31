@@ -51,14 +51,14 @@ def main():
                     screen.mostrar_mensaje("Colección guardada con éxito.", "exito")
                     cambios_sin_guardar = False
                 else:
-                    screen.mostrar_mensaje("Error al guardar la colección. Comprueba los permisos.", "error")
+                    screen.mostrar_mensaje("Error al guardar la colección. Comprueba los permisos.", f"{styles.COLOR_BOLD}error{styles.COLOR_RESET}")
             else:
                 screen.mostrar_mensaje("No hay cambios pendientes para guardar.", "aviso")
 
         elif seleccion == 7:
             if cambios_sin_guardar:
                 opciones_salida = ["Guardar y Salir", "Salir sin Guardar", "Cancelar"]
-                idx_salida = screen.main_menu_set(opciones_salida, "Hay cambios sin guardar. ¿Qué deseas hacer?")
+                idx_salida = screen.main_menu_set(opciones_salida, "Hay cambios sin guardar. ¿Qué quieres hacer?")
                 if idx_salida == 0:
                     corefiles.escribir_coleccion(coleccion)
                     break
@@ -68,7 +68,7 @@ def main():
                 break
     
     screen.limpiar_pantalla()
-    print(f"\n{styles.COLOR_BOLD}{styles.COLOR_CYAN}¡Gracias por usar el Gestor de Contenido! ¡Hasta pronto!{styles.COLOR_RESET}\n")
+    print(f"\n{styles.COLOR_BOLD}{styles.COLOR_CYAN}¡Gracias por usar el Gestor de Contenido! {styles.COLOR_RED}¡Hasta pronto!{styles.COLOR_RESET}\n")
 
 if __name__ == '__main__':
     main()

@@ -1,5 +1,6 @@
 from utils import screencontroller as screen
 from utils import validateData as validate
+from utils import styles
 
 def _generar_nuevo_id(coleccion):
     if not coleccion:
@@ -82,7 +83,7 @@ def eliminar_elemento(coleccion):
     opciones = [f"{item['titulo']} ({item['categoria']})" for item in coleccion]
     idx = screen.main_menu_set(opciones, "Selecciona un elemento para ELIMINAR:")
     item_a_eliminar = coleccion[idx]
-    confirmacion = ["¡No! Cancelar.", "Sí, eliminar este elemento"]
+    confirmacion = [f"{styles.COLOR_BOLD}¡No!{styles.COLOR_RESET} Cancelar.", f"{styles.COLOR_BOLD}Sí{styles.COLOR_RESET}, eliminar este elemento"]
     idx_conf = screen.main_menu_set(confirmacion, f"¿Estás SEGURO de eliminar '{item_a_eliminar['titulo']}' de forma permanente?")
     
     if idx_conf == 1:
