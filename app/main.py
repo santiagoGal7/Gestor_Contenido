@@ -1,53 +1,74 @@
-import sys
 import os
+import sys
 
-MainDir = os.path.dirname(os.path.abspath(__file__))
-project_ruta = os.path.dirname(MainDir)
-if project_ruta not in sys.path:
-    sys.path.append(project_ruta)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from utils.screencontroller import menu_bymy, clean_screen, pause_screen
+from controllers import (
+    anadir_elemento, editar_elemento, eliminar_elemento,
+    buscar_elemento, ver_elementos_por_categoria
+)
+from utils import screencontroller as screen
+from utils import corefiles
 from utils import styles
-import controllers.gestor as gestor
 
-def main_menu():
-    gestor.loading_collection()
+def main():
+    """Punto de entrada principal de la aplicación."""
     
+    coleccion = corefiles.leer_coleccion()
+    cambios_sin_guardar = False
+
+    opciones_menu = [
+        "Añadir Nuevo Elemento", "Ver Todos los Elementos", "Buscar Elemento",
+        "Editar Elemento", "Eliminar Elemento", "Ver por Categoría",
+        "Guardar Cambios", "Salir"
+    ]
+
     while True:
-        main_tittle = "Administrador de Colección Personal"
-        main_options = [
-            "1. Añadir un Nuevo Elemento",
-            "2. Ver Todos los Elementos",
-            "3. Buscar un Elemento",
-            "4. Editar un Elemento",
-            "5. Eliminar un Elemento",
-            "6. Ver Elementos por Categoría",
-            "7. Guardar y Cargar Colección",
-            "8. Salir"
-        ]
-        
-        if gestor.unsaved_changes:
-            main_options[6] += f" {styles.NEON_YELLOW}[Cambios sin guardar] {styles.RESET}"
+        titulo = f"{styles.COLOR_BOLD}Gestor de Contenido Personal{styles.COLOR_RESET}"
+        if cambios_sin_guardar:
+            titulo += f" {styles.COLOR_YELLOW}[*]{styles.COLOR_RESET}"
 
-        selection = menu_bymy(main_tittle, main_options)
+        seleccion = screen.crear_menu_interactivo(opciones_menu, titulo)
 
-        if selection == 1: gestor.show_element_table(gestor.elementos_en_memoria, "Colección Completa")
-        elif selection == 2: gestor.search_element()
-        elif selection == 3: gestor.edit_element()
-        elif selection == 4: gestor.delete_element()
-        elif selection == 5: gestor.see_elements_category()
-        elif selection == 6: gestor.manage_saving_loading()
-        elif selection == -1 or selection == 7: 
-            if gestor.unsaved_changes:
-                exit_tittle = "¿Seguro que quieres salir? Tienes cambios sin guardar."
-                exit_options = ["Sí, salir sin guardar", "No, volver al programa"]
-                confirmation = menu_bymy(exit_tittle, exit_options)
-                if confirmation == 1: 
-                    continue
-            
-            clean_screen()
-            print(f"\n{styles.NEON_RED}{styles.BOLD}¡Hasta luego!{styles.RESET}")
-            break
+        if seleccion == 0:
+            if anadir_elemento(coleccion):
+                cambios_sin_guardar = True
+        elif seleccion == 1:
+            screen.mostrar_tabla(coleccion, "Colección Completa")
+        elif seleccion == 2:
+            buscar_elemento(coleccion)
+        elif seleccion == 3:
+            if editar_elemento(coleccion):
+                cambios_sin_guardar = True
+        elif seleccion == 4:
+            if eliminar_elemento(coleccion):
+                cambios_sin_guardar = True
+        elif seleccion == 5:
+            ver_elementos_por_categoria(coleccion)
+        elif seleccion == 6:
+            if cambios_sin_guardar:
+                if corefiles.escribir_coleccion(coleccion):
+                    screen.mostrar_mensaje("Colección guardada con éxito.", "exito")
+                    cambios_sin_guardar = False
+                else:
+                    screen.mostrar_mensaje("Error al guardar la colección. Comprueba los permisos.", "error")
+            else:
+                screen.mostrar_mensaje("No hay cambios pendientes para guardar.", "aviso")
 
-if __name__ == "__main__":
-    main_menu()
+        elif seleccion == 7:
+            if cambios_sin_guardar:
+                opciones_salida = ["Guardar y Salir", "Salir sin Guardar", "Cancelar"]
+                idx_salida = screen.crear_menu_interactivo(opciones_salida, "Hay cambios sin guardar. ¿Qué deseas hacer?")
+                if idx_salida == 0:
+                    corefiles.escribir_coleccion(coleccion)
+                    break
+                elif idx_salida == 1:
+                    break
+            else:
+                break
+    
+    screen.limpiar_pantalla()
+    print(f"\n{styles.COLOR_BOLD}{styles.COLOR_CYAN}¡Gracias por usar el Gestor de Contenido! ¡Hasta pronto!{styles.COLOR_RESET}\n")
+
+if __name__ == '__main__':
+    main()

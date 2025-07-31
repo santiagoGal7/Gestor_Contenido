@@ -1,9 +1,6 @@
-# controllers/element_manager.py
-
 from utils import screencontroller as screen
 from utils import validateData as validate
 
-# Esta función es una utilidad interna para este módulo
 def _generar_nuevo_id(coleccion):
     """Genera un nuevo ID único para un elemento (ej: E001, E002, ...)."""
     if not coleccion:

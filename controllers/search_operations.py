@@ -1,5 +1,3 @@
-# controllers/search_operations.py
-
 from utils import screencontroller as screen
 
 def buscar_elemento(coleccion):
