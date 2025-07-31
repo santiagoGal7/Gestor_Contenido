@@ -2,7 +2,6 @@ from utils import screencontroller as screen
 from utils import validateData as validate
 
 def _generar_nuevo_id(coleccion):
-    """Genera un nuevo ID único para un elemento (ej: E001, E002, ...)."""
     if not coleccion:
         return "E001"
     ids_numericos = [int(item['id'][1:]) for item in coleccion if item['id'].startswith('E') and item['id'][1:].isdigit()]
@@ -12,7 +11,6 @@ def _generar_nuevo_id(coleccion):
     return f"E{max_id + 1:03d}"
 
 def anadir_elemento(coleccion):
-    """Gestiona el flujo para añadir un nuevo elemento. Devuelve True si se añade, False si se cancela."""
     screen.limpiar_pantalla()
     categorias = ["Libro", "Película", "Música"]
     idx_cat = screen.crear_menu_interactivo(categorias, "Selecciona la categoría:")

@@ -1,7 +1,6 @@
 from utils import screencontroller as screen
 
 def buscar_elemento(coleccion):
-    """Flujo para buscar elementos por un criterio y término."""
     if not coleccion:
         screen.mostrar_mensaje("No hay elementos en la colección para buscar.", "aviso")
         return

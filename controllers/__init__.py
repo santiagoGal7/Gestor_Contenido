@@ -1,0 +1,2 @@
+from .element_manager import anadir_elemento, editar_elemento, eliminar_elemento
+from .search_operations import buscar_elemento, ver_elementos_por_categoria

@@ -4,23 +4,25 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from controllers import (
-    anadir_elemento, editar_elemento, eliminar_elemento,
-    buscar_elemento, ver_elementos_por_categoria
+    anadir_elemento, buscar_elemento
 )
 from utils import screencontroller as screen
 from utils import corefiles
 from utils import styles
 
 def main():
-    """Punto de entrada principal de la aplicación."""
-    
     coleccion = corefiles.leer_coleccion()
     cambios_sin_guardar = False
 
     opciones_menu = [
-        "Añadir Nuevo Elemento", "Ver Todos los Elementos", "Buscar Elemento",
-        "Editar Elemento", "Eliminar Elemento", "Ver por Categoría",
-        "Guardar Cambios", "Salir"
+        "Añadir Nuevo Elemento",
+        "Ver Todos los Elementos",
+        "Buscar Elemento",
+        "Editar Elemento",
+        "Eliminar Elemento",
+        "Ver por Categoría",
+        "Guardar Cambios",
+        "Salir"
     ]
 
     while True:
@@ -37,14 +39,6 @@ def main():
             screen.mostrar_tabla(coleccion, "Colección Completa")
         elif seleccion == 2:
             buscar_elemento(coleccion)
-        elif seleccion == 3:
-            if editar_elemento(coleccion):
-                cambios_sin_guardar = True
-        elif seleccion == 4:
-            if eliminar_elemento(coleccion):
-                cambios_sin_guardar = True
-        elif seleccion == 5:
-            ver_elementos_por_categoria(coleccion)
         elif seleccion == 6:
             if cambios_sin_guardar:
                 if corefiles.escribir_coleccion(coleccion):
