@@ -3,13 +3,7 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from controllers import (
-    anadir_elemento,
-    buscar_elemento,
-    ver_elementos_por_categoria,
-    editar_elemento, 
-    eliminar_elemento
-)
+from controllers import (anadir_elemento, buscar_elemento, ver_elementos_por_categoria, editar_elemento, eliminar_elemento)
 from utils import screencontroller as screen
 from utils import corefiles
 from utils import styles
@@ -34,7 +28,7 @@ def main():
         if cambios_sin_guardar:
             titulo += f" {styles.COLOR_YELLOW}[*]{styles.COLOR_RESET}"
 
-        seleccion = screen.crear_menu_interactivo(opciones_menu, titulo)
+        seleccion = screen.main_menu_set(opciones_menu, titulo)
 
         if seleccion == 0:
             if anadir_elemento(coleccion):
@@ -64,7 +58,7 @@ def main():
         elif seleccion == 7:
             if cambios_sin_guardar:
                 opciones_salida = ["Guardar y Salir", "Salir sin Guardar", "Cancelar"]
-                idx_salida = screen.crear_menu_interactivo(opciones_salida, "Hay cambios sin guardar. ¿Qué deseas hacer?")
+                idx_salida = screen.main_menu_set(opciones_salida, "Hay cambios sin guardar. ¿Qué deseas hacer?")
                 if idx_salida == 0:
                     corefiles.escribir_coleccion(coleccion)
                     break

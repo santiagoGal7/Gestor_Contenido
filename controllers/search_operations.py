@@ -6,7 +6,7 @@ def buscar_elemento(coleccion):
         return
 
     criterios = ["Por Título", "Por Responsable", "Por Género"]
-    idx = screen.crear_menu_interactivo(criterios, "Selecciona un criterio de búsqueda:")
+    idx = screen.main_menu_set(criterios, "Selecciona un criterio de búsqueda:")
     criterio_key = criterios[idx].split(" ")[-1].lower()
     termino = screen.obtener_input_valido(f"Buscar {criterio_key.capitalize()} que contenga:")
     
@@ -28,7 +28,7 @@ def ver_elementos_por_categoria(coleccion):
         screen.mostrar_mensaje("No hay categorías para mostrar.", "aviso")
         return
         
-    idx = screen.crear_menu_interactivo(categorias_disponibles, "Selecciona una categoría:")
+    idx = screen.main_menu_set(categorias_disponibles, "Selecciona una categoría:")
     categoria_seleccionada = categorias_disponibles[idx]
     
     filtrados = [item for item in coleccion if item['categoria'] == categoria_seleccionada]

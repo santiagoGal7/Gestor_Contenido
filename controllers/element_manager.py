@@ -13,7 +13,7 @@ def _generar_nuevo_id(coleccion):
 def anadir_elemento(coleccion):
     screen.limpiar_pantalla()
     categorias = ["Libro", "Película", "Música"]
-    idx_cat = screen.crear_menu_interactivo(categorias, "Selecciona la categoría:")
+    idx_cat = screen.main_menu_set(categorias, "Selecciona la categoría:")
     categoria = categorias[idx_cat]
     label_responsable = "Autor" if categoria == "Libro" else "Director" if categoria == "Película" else "Artista"
 
@@ -42,13 +42,13 @@ def editar_elemento(coleccion):
         return False
 
     opciones = [f"{item['titulo']} ({item['categoria']})" for item in coleccion]
-    idx = screen.crear_menu_interactivo(opciones, "Selecciona un elemento para editar:")
+    idx = screen.main_menu_set(opciones, "Selecciona un elemento para editar:")
     item_a_editar = coleccion[idx]
     se_hizo_un_cambio = False
 
     while True:
         campos = ["Título", "Responsable", "Género", "Valoración", "[ TERMINAR EDICIÓN ]"]
-        idx_campo = screen.crear_menu_interactivo(campos, f"Editando: {item_a_editar['titulo']}")
+        idx_campo = screen.main_menu_set(campos, f"Editando: {item_a_editar['titulo']}")
         if idx_campo == 4: break
         campo_a_editar = campos[idx_campo].lower()
         valor_actual = item_a_editar.get(campo_a_editar, "N/A")
@@ -80,10 +80,10 @@ def eliminar_elemento(coleccion):
         return False
     
     opciones = [f"{item['titulo']} ({item['categoria']})" for item in coleccion]
-    idx = screen.crear_menu_interactivo(opciones, "Selecciona un elemento para ELIMINAR:")
+    idx = screen.main_menu_set(opciones, "Selecciona un elemento para ELIMINAR:")
     item_a_eliminar = coleccion[idx]
     confirmacion = ["¡No! Cancelar.", "Sí, eliminar este elemento"]
-    idx_conf = screen.crear_menu_interactivo(confirmacion, f"¿Estás SEGURO de eliminar '{item_a_eliminar['titulo']}' de forma permanente?")
+    idx_conf = screen.main_menu_set(confirmacion, f"¿Estás SEGURO de eliminar '{item_a_eliminar['titulo']}' de forma permanente?")
     
     if idx_conf == 1:
         coleccion.pop(idx)

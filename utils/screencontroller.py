@@ -38,3 +38,24 @@ def _getch_unix():
     return None
 
 getch = _getch_windows if os.name == 'nt' else _getch_unix
+
+def main_menu_set(opciones, titulo):
+    seleccion_actual = 0
+    while True:
+        limpiar_pantalla()
+        print(f"{styles.COLOR_BOLD}{styles.COLOR_BLUE}{titulo}{styles.COLOR_RESET}\n")
+        for i, opcion in enumerate(opciones):
+            if i == seleccion_actual:
+                print(f" {styles.COLOR_GREEN}▶ {opcion}{styles.COLOR_RESET}")
+            else:
+                print(f"   {opcion}")
+        print(f"\n{styles.COLOR_MAGENTA}{styles.COLOR_BOLD}(Usa las flechas ▲/▼ y Enter para seleccionar){styles.COLOR_RESET}")
+        
+        tecla = getch()
+        if tecla == "UP":
+            seleccion_actual = (seleccion_actual - 1 + len(opciones)) % len(opciones)
+        elif tecla == "DOWN":
+            seleccion_actual = (seleccion_actual + 1) % len(opciones)
+        elif tecla == "ENTER":
+            limpiar_pantalla()
+            return seleccion_actual
