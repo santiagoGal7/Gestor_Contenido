@@ -4,7 +4,11 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from controllers import (
-    anadir_elemento, buscar_elemento
+    anadir_elemento,
+    buscar_elemento,
+    ver_elementos_por_categoria,
+    editar_elemento, 
+    eliminar_elemento
 )
 from utils import screencontroller as screen
 from utils import corefiles
@@ -39,6 +43,14 @@ def main():
             screen.mostrar_tabla(coleccion, "Colección Completa")
         elif seleccion == 2:
             buscar_elemento(coleccion)
+        elif seleccion == 3:
+            if editar_elemento(coleccion):
+                cambios_sin_guardar = True
+        elif seleccion == 4:
+            if eliminar_elemento(coleccion):
+                cambios_sin_guardar = True
+        elif seleccion == 5:
+            ver_elementos_por_categoria(coleccion)
         elif seleccion == 6:
             if cambios_sin_guardar:
                 if corefiles.escribir_coleccion(coleccion):
