@@ -15,65 +15,131 @@ def anadir_elemento(coleccion):
     screen.limpiar_pantalla()
     categorias = ["Libro", "Película", "Música"]
     idx_cat = screen.main_menu_set(categorias, "Selecciona la categoría:")
+    if idx_cat == -1:
+        screen.mostrar_mensaje("Operación cancelada.", "aviso")
+        return False
     categoria = categorias[idx_cat]
     label_responsable = "Autor" if categoria == "Libro" else "Director" if categoria == "Película" else "Artista"
+    titulo = screen.obtener_input_valido(
+        "Título:",
+        validacion=lambda t: not validate.titulo_existe(t, coleccion),
+        msg_error="Ya existe un elemento con este título."
+    )
+    if titulo is None:
+        screen.mostrar_mensaje("Operación cancelada.", "aviso")
+        return False
 
-    while True:
-        titulo = screen.obtener_input_valido("Título:", validacion=lambda t: not validate.titulo_existe(t, coleccion), msg_error="Ya existe un elemento con este título.")
-        if titulo is None: break
-        responsable = screen.obtener_input_valido(f"{label_responsable}:")
-        if responsable is None: break
-        genero = screen.obtener_input_valido("Género:")
-        if genero is None: break
-        valoracion_str = screen.obtener_input_valido("Valoración (1-5, opcional):", es_opcional=True, validacion=validate.es_valoracion_valida, msg_error="Debe ser un número entre 1 y 5.")
-        if valoracion_str is None: break
+    responsable = screen.obtener_input_valido(
+        f"{label_responsable}:",
+        validacion=validate.es_texto_sin_simbolos,
+        msg_error="Entrada inválida. Solo puede contener letras y números."
+    )
+    if responsable is None:
+        screen.mostrar_mensaje("Operación cancelada.", "aviso")
+        return False
 
-        valoracion = int(valoracion_str) if valoracion_str else None
-        nuevo_item = {"id": _generar_nuevo_id(coleccion), "categoria": categoria, "titulo": titulo, "responsable": responsable, "genero": genero, "valoracion": valoracion}
-        coleccion.append(nuevo_item)
-        screen.mostrar_mensaje("Elemento añadido con éxito.", "exito")
-        return True
+    genero = screen.obtener_input_valido(
+        "Género:",
+        validacion=validate.es_genero_valido,
+        msg_error="Género inválido. Solo puede contener letras."
+    )
+    if genero is None:
+        screen.mostrar_mensaje("Operación cancelada.", "aviso")
+        return False
 
-    screen.mostrar_mensaje("Operación cancelada.", "aviso")
-    return False
+    valoracion_str = screen.obtener_input_valido(
+        "Valoración (1-5, opcional):", 
+        es_opcional=True, 
+        validacion=validate.es_valoracion_valida, 
+        msg_error="Debe ser un número entre 1 y 5."
+    )
+    if valoracion_str is None:
+        screen.mostrar_mensaje("Operación cancelada.", "aviso")
+        return False
+    valoracion = int(valoracion_str) if valoracion_str else None
+    nuevo_item = {
+        "id": _generar_nuevo_id(coleccion), 
+        "categoria": categoria, 
+        "titulo": titulo, 
+        "responsable": responsable, 
+        "genero": genero, 
+        "valoracion": valoracion
+    }
+    coleccion.append(nuevo_item)
+    screen.mostrar_mensaje("Elemento añadido con éxito.", "exito")
+    return True
 
 def editar_elemento(coleccion):
     if not coleccion:
         screen.mostrar_mensaje("No hay elementos para editar.", "aviso")
         return False
-
-    opciones = [f"{item['titulo']} ({item['categoria']})" for item in coleccion]
-    idx = screen.main_menu_set(opciones, "Selecciona un elemento para editar:")
-    item_a_editar = coleccion[idx]
-    se_hizo_un_cambio = False
-
+    opciones = [f"{item.get('titulo', 'Sin Título')} ({item.get('categoria', 'N/A')})" for item in coleccion]
+    opciones.append(f"{styles.COLOR_YELLOW}Cancelar Edición{styles.COLOR_RESET}") 
+    idx_item = screen.main_menu_set(opciones, "Selecciona un elemento para editar:")
+    if idx_item == -1 or idx_item == len(opciones) - 1:
+        screen.mostrar_mensaje("Edición cancelada.", "aviso")
+        return False
+    item_editar = coleccion[idx_item]
+    cambiox = False
     while True:
-        campos = ["Título", "Responsable", "Género", "Valoración", "[ TERMINAR EDICIÓN ]"]
-        idx_campo = screen.main_menu_set(campos, f"Editando: {item_a_editar['titulo']}")
-        if idx_campo == 4: break
-        campo_a_editar = campos[idx_campo].lower()
-        valor_actual = item_a_editar.get(campo_a_editar, "N/A")
-        prompt = f"Nuevo {campos[idx_campo]} (actual: {valor_actual}):"
-        
-        if campo_a_editar == 'título':
-            nuevo_valor = screen.obtener_input_valido(prompt, validacion=lambda t: not validate.titulo_existe(t, coleccion, item_a_editar['id']), msg_error="Ya existe otro elemento con ese título.")
-        elif campo_a_editar == 'valoración':
-            nuevo_valor_str = screen.obtener_input_valido(prompt, es_opcional=True, validacion=validate.es_valoracion_valida, msg_error="Debe ser un número entre 1 y 5.")
-            if nuevo_valor_str is None: continue
-            nuevo_valor = int(nuevo_valor_str) if nuevo_valor_str else None
-        else:
-            nuevo_valor = screen.obtener_input_valido(prompt)
-
-        if nuevo_valor is None:
-            screen.mostrar_mensaje(f"Edición de '{campos[idx_campo]}' cancelada.", "aviso")
-            continue
-        item_a_editar[campo_a_editar] = nuevo_valor
-        se_hizo_un_cambio = True
-        screen.mostrar_mensaje(f"Campo '{campos[idx_campo]}' actualizado.", "exito")
-
-    if not se_hizo_un_cambio:
+        campos_editar = {
+            "Título": "titulo",
+            "Responsable": "responsable",
+            "Género": "genero",
+            "Valoración": "valoracion"
+        }
+        opciones_edicion = list(campos_editar.keys())
+        opciones_edicion.append(f"{styles.COLOR_GREEN}Guardar Cambios y Salir{styles.COLOR_RESET}")
+        titulo_actual = item_editar.get('titulo', 'N/A')
+        idx_campo = screen.main_menu_set(opciones_edicion, f"Editando: {titulo_actual}")
+        if idx_campo == len(opciones_edicion) - 1:
+            break 
+        if idx_campo == -1:
+             cambiox = False 
+             break
+        campo_display = opciones_edicion[idx_campo]
+        campo_real = campos_editar[campo_display]
+        valor_actual = item_editar.get(campo_real)
+        prompt_valor_actual = f" (actual: {valor_actual if valor_actual is not None else 'N/A'})"
+        prompt = f"Nuevo {campo_display}{prompt_valor_actual}:"
+        nuevo_valor = None
+        if campo_real == 'titulo':
+            nuevo_valor = screen.obtener_input_valido(
+                prompt,
+                validacion=lambda t: not validate.titulo_existe(t, coleccion, item_editar['id']),
+                msg_error="Ya existe otro elemento con ese título."
+            )
+        elif campo_real == 'responsable':
+            nuevo_valor = screen.obtener_input_valido(
+                prompt,
+                validacion=validate.es_texto_sin_simbolos,
+                msg_error="Solo puede contener letras y números."
+            )
+        elif campo_real == 'genero':
+            nuevo_valor = screen.obtener_input_valido(
+                prompt,
+                validacion=validate.es_genero_valido,
+                msg_error="Solo puede contener letras."
+            )
+        elif campo_real == 'valoracion':
+            nuevo_valor_str = screen.obtener_input_valido(
+                prompt, es_opcional=True,
+                validacion=validate.es_valoracion_valida,
+                msg_error="Debe ser un número entre 1 y 5."
+            )
+            if nuevo_valor_str is not None:
+                nuevo_valor = int(nuevo_valor_str) if nuevo_valor_str else None
+        if nuevo_valor is not None:
+            item_editar[campo_real] = nuevo_valor
+            cambiox = True
+            screen.mostrar_mensaje(f"Campo '{campo_display}' actualizado.", "exito", con_pausa=False)
+            import time
+            time.sleep(1.5)
+    if cambiox:
+        screen.mostrar_mensaje("Cambios guardados con éxito en la sesión.", "exito")
+    else:
         screen.mostrar_mensaje("No se realizó ningún cambio.", "aviso")
-    return se_hizo_un_cambio
+    return cambiox
 
 def eliminar_elemento(coleccion):
     if not coleccion:
